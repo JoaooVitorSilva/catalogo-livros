@@ -1,11 +1,16 @@
-# Etapa 1: Construir o app
-FROM maven:3.9.4-eclipse-temurin-17 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# Etapa 1: Build da aplicação
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Etapa 2: Rodar o app
+WORKDIR /app
+
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn -q -e -DskipTests package
+
+# Etapa 2: Executar a aplicação
 FROM eclipse-temurin:17-jdk
+
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
