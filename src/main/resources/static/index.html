@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Livros</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 600px;
+            margin: auto;
+            margin-top: 40px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+        }
+        .livro {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .botoes {
+            margin-top: 10px;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Catálogo de Livros</h1>
+
+<h2>Pesquisar Livro por ID</h2>
+<input id="busca-id" type="number" placeholder="Digite o ID do livro">
+<button onclick="buscarPorId()">Buscar</button>
+<button onclick="carregarLivros()">Mostrar todos</button>
+
+<hr>
+
+<h2>Adicionar Livro</h2>
+<input id="titulo" type="text" placeholder="Título">
+<input id="autor" type="text" placeholder="Autor">
+<input id="ano" type="number" placeholder="Ano">
+<button onclick="adicionarLivro()">Adicionar</button>
+
+<h2>Lista de Livros</h2>
+<div id="lista"></div>
+
+<script>
+    const API_URL = "http://localhost:8080/livros";
+
+    carregarLivros();
+
+    function carregarLivros() {
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(livros => renderLista(livros));
+    }
+
+    // ---------- BUSCAR POR ID ----------
+    function buscarPorId() {
+        const id = document.getElementById("busca-id").value;
+
+        if (!id) {
+            alert("Digite um ID para buscar!");
+            return;
+        }
+
+        fetch(`${API_URL}/${id}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Livro não encontrado");
+                return res.json();
+            })
+            .then(livro => renderLista([livro]))
+            .catch(() => {
+                document.getElementById("lista").innerHTML = "<p>Livro não encontrado.</p>";
+            });
+    }
+
+    // ---------- EXIBIR LISTA ----------
+    function renderLista(livros) {
+        const lista = document.getElementById("lista");
+        lista.innerHTML = "";
+
+        livros.forEach(livro => {
+            const item = document.createElement("div");
+            item.classList.add("livro");
+
+            item.innerHTML = `
+                <strong>ID:</strong> ${livro.id}<br>
+
+                <strong>Título:</strong>
+                <input id="titulo-${livro.id}" value="${livro.titulo}" disabled><br>
+
+                <strong>Autor:</strong>
+                <input id="autor-${livro.id}" value="${livro.autor}" disabled><br>
+
+                <strong>Ano:</strong>
+                <input id="ano-${livro.id}" type="number" value="${livro.ano}" disabled><br>
+
+                <div class="botoes">
+                    <button onclick="editarLivro(${livro.id})" id="btn-editar-${livro.id}">Editar</button>
+                    <button onclick="atualizarLivro(${livro.id})">Salvar</button>
+                    <button onclick="deletarLivro(${livro.id})">Deletar</button>
+                </div>
+            `;
+
+            lista.appendChild(item);
+        });
+    }
+
+    function adicionarLivro() {
+        const livro = {
+            titulo: document.getElementById("titulo").value,
+            autor: document.getElementById("autor").value,
+            ano: parseInt(document.getElementById("ano").value)
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(livro)
+        }).then(() => carregarLivros());
+    }
+
+    function editarLivro(id) {
+        document.getElementById(`titulo-${id}`).disabled = false;
+        document.getElementById(`autor-${id}`).disabled = false;
+        document.getElementById(`ano-${id}`).disabled = false;
+
+        const botao = document.getElementById(`btn-editar-${id}`);
+        botao.innerText = "Editando...";
+        botao.disabled = true;
+    }
+
+    function atualizarLivro(id) {
+        const livro = {
+            titulo: document.getElementById(`titulo-${id}`).value,
+            autor: document.getElementById(`autor-${id}`).value,
+            ano: parseInt(document.getElementById(`ano-${id}`).value)
+        };
+
+        fetch(`${API_URL}/${id}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(livro)
+        }).then(() => carregarLivros());
+    }
+
+    function deletarLivro(id) {
+        fetch(`${API_URL}/${id}`, {
+            method: "DELETE"
+        }).then(() => carregarLivros());
+    }
+</script>
+
+</body>
+</html>
