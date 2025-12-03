@@ -37,6 +37,7 @@ O sistema permite cadastrar, listar, editar, excluir e consultar livros via API 
 
 ## 📂 Estrutura do Projeto
 
+```bash
 catalogo-livros/
 │
 ├── src/main/java/com/joao/catalogo/
@@ -51,7 +52,7 @@ catalogo-livros/
 │ └── application.properties
 │
 └── pom.xml
-
+```
 
 ---
 
@@ -111,6 +112,9 @@ http://localhost:8080
 ## 📘 Autores
 
 João Vitor Silva, Jaison Rafael Tavares, Isaac de Lima, João Volkmann
+
+---
+
 Projeto desenvolvido para estudo e aprimoramento em Java, Spring Boot e APIs REST.
 
 
