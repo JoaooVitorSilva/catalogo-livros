@@ -111,7 +111,7 @@ http://localhost:8080
 
 ## 📘 Autores
 
-João Vitor Silva, Jaison Rafael Tavares, Isaac de Lima, João Volkmann
+João Vitor Silva, Jaison Rafael Tavares, Isaac de Lima, João Volkmann, Marcio
 
 ---
 
